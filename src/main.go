@@ -2,15 +2,21 @@ package main
 
 import (
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"note/src/routers"
 )
 
+func createApp() *iris.Application {
+	app := iris.New()
+
+	mvc.Configure(app.Party("/api/v1/user"), routers.UserMvc)
+	//mvc.New(app).Handle(new(controllers.UserController))
+
+	return app
+}
+
 func main() {
-	app := iris.Default()
-	app.Get("/ping", func(ctx iris.Context) {
-		_, _ = ctx.JSON(iris.Map{
-			"message": "pong",
-		})
-	})
+	app := createApp()
 
 	_ = app.Run(iris.Addr(":8080"))
 }
