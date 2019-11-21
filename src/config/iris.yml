@@ -4,6 +4,7 @@ FireMethodNotAllowed: true
 DisableBodyConsumptionOnUnmarshal: true
 TimeFormat: Mon, 01 Jan 2006 15:04:05 GMT
 Charset: UTF-8
+AppPort: :8080
 
 Mysql:
   Port: 3306

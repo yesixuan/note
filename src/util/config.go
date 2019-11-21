@@ -3,7 +3,6 @@ package util
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 )
 
 /** USAGE:
@@ -15,6 +14,8 @@ fmt.Println(config.Mysql)
 */
 var configFile []byte
 
+var Configs = Config{}
+
 type Config struct {
 	DisablePathCorrection             bool   `yaml:"DisablePathCorrection"`
 	EnablePathEscape                  bool   `yaml:"EnablePathEscape"`
@@ -22,6 +23,7 @@ type Config struct {
 	DisableBodyConsumptionOnUnmarshal bool   `yaml:"DisableBodyConsumptionOnUnmarshal"`
 	TimeFormat                        string `yaml:"TimeFormat"`
 	Charset                           string `yaml:"Charset"`
+	AppPort                           string `yaml:"AppPort"`
 	Mysql                             Mysql  `yaml:"Mysql"`
 }
 
@@ -33,15 +35,14 @@ type Mysql struct {
 	DBName string `yaml:"DBName"`
 }
 
-func GetConfig() (e *Config, err error) {
-	err = yaml.Unmarshal(configFile, &e)
-	return e, err
-}
-
 func init() {
 	var err error
 	configFile, err = ioutil.ReadFile("src/config/iris.yml")
 	if err != nil {
-		log.Fatalf("读取 yml 文件出错： %v ", err)
+		panic("Sys config read err")
+	}
+	err = yaml.Unmarshal(configFile, &Configs)
+	if err != nil {
+		panic(err)
 	}
 }
