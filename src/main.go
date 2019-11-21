@@ -1,15 +1,14 @@
 package main
 
 import (
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"note/src/routers"
 )
 
 func createApp() *iris.Application {
-	app := iris.New()
-
-	app.PartyFunc("/user", routers.UsersRoutes)
-
+	app := iris.Default()
+	// 初始化分组路由
+	routers.InitRouter(app)
 	return app
 }
 
