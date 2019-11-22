@@ -7,10 +7,11 @@ import (
 )
 
 func UsersRoutes(usersRouter iris.Party) {
-	usersRouter.Post("/register", createUser)
+	usersRouter.Post("/register", register)
+	usersRouter.Post("/login", login)
 }
 
-func createUser(ctx iris.Context) {
+func register(ctx iris.Context) {
 	// 解析
 	var user validators.User
 	var userModel models.User
@@ -30,4 +31,19 @@ func createUser(ctx iris.Context) {
 	_ = ctx.ReadJSON(&userModel)
 	userModel.CreateUser(ctx)
 	ctx.Next()
+}
+
+func login(ctx iris.Context) {
+	var loginUser validators.LoginUser
+	var user models.User
+	if err := ctx.ReadJSON(&loginUser); err != nil {
+		ctx.StopExecution()
+		ctx.StatusCode(iris.StatusUnauthorized)
+		ctx.Values().Set("msg", "json 解析错误")
+		return
+	}
+	if loginUser.Verify(ctx) != nil {
+		return
+	}
+	user.Login(ctx, &loginUser)
 }

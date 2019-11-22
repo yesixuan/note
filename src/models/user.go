@@ -4,7 +4,10 @@ import (
 	"github.com/jameskeane/bcrypt"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
+	"note/src/validators"
 )
+
+var salt, _ = bcrypt.Salt(10)
 
 type User struct {
 	gorm.Model
@@ -17,7 +20,6 @@ type User struct {
 }
 
 func (user *User) CreateUser(ctx iris.Context) {
-	salt, _ := bcrypt.Salt(10)
 	hash, _ := bcrypt.Hash(user.Password, salt)
 	user.Password = hash
 	if err := DB.Create(user).Error; err != nil {
@@ -28,4 +30,22 @@ func (user *User) CreateUser(ctx iris.Context) {
 	}
 	ctx.Values().Set("data", user)
 	ctx.Values().Set("msg", "注册成功")
+}
+
+func (user *User) Login(ctx iris.Context, loginUser *validators.LoginUser) {
+	var result User
+	if result := DB.Where("uname = ?", loginUser.Uname).First(&result); result.Error != nil {
+		ctx.StopExecution()
+		ctx.StatusCode(iris.StatusNotFound)
+		ctx.Values().Set("msg", "不存在该用户")
+		return
+	}
+	if !bcrypt.Match(loginUser.Password, result.Password) {
+		ctx.StopExecution()
+		ctx.StatusCode(iris.StatusNotFound)
+		ctx.Values().Set("msg", "用户名或密码错误")
+		return
+	}
+	ctx.Values().Set("data", result)
+	ctx.Next()
 }

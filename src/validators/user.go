@@ -40,3 +40,19 @@ func UserStructLevelValidation(sl validator.StructLevel) {
 		sl.ReportError(user.Mobile, "Mobile", "user.Mobile", "请输入正确的手机号", "")
 	}
 }
+
+type LoginUser struct {
+	Uname    string `json:"uname" validate:"required,min=1,max=50"`
+	Password string `json:"password" validate:"required,min=1,max=50"`
+}
+
+func (loginUser LoginUser) Verify(ctx iris.Context) (err error) {
+	errs := validate.Struct(loginUser)
+	if errs != nil && len(errs.(validator.ValidationErrors)) != 0 {
+		ctx.StopExecution()
+		ctx.StatusCode(iris.StatusUnauthorized)
+		ctx.Values().Set("msg", errs.Error())
+		return errs
+	}
+	return nil
+}
