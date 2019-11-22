@@ -21,21 +21,22 @@ func init() {
 	validate = validator.New()
 }
 
-func (user User) Verify(ctx iris.Context) {
+func (user User) Verify(ctx iris.Context) (err error) {
 	validate.RegisterStructValidation(UserStructLevelValidation, User{})
 	errs := validate.Struct(user)
 	if errs != nil && len(errs.(validator.ValidationErrors)) != 0 {
 		ctx.StopExecution()
 		ctx.StatusCode(iris.StatusUnauthorized)
 		ctx.Values().Set("msg", errs.Error())
-		println(errs.Error())
+		return errs
 	}
+	return nil
 }
 
 func UserStructLevelValidation(sl validator.StructLevel) {
 	user := sl.Current().Interface().(User)
 	reg := regexp.MustCompile("^1[0-9]{10}$")
-	if reg.MatchString(user.Mobile) {
+	if !reg.MatchString(user.Mobile) {
 		sl.ReportError(user.Mobile, "Mobile", "user.Mobile", "请输入正确的手机号", "")
 	}
 }

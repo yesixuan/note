@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/kataras/iris/v12"
+	"note/src/models"
 	"note/src/validators"
 )
 
@@ -12,6 +13,7 @@ func UsersRoutes(usersRouter iris.Party) {
 func createUser(ctx iris.Context) {
 	// 解析
 	var user validators.User
+	var userModel models.User
 	if err := ctx.ReadJSON(&user); err != nil {
 		ctx.StopExecution()
 		ctx.StatusCode(iris.StatusUnauthorized)
@@ -19,8 +21,13 @@ func createUser(ctx iris.Context) {
 		return
 	}
 	// 校验
-	user.Verify(ctx)
+	if user.Verify(ctx) != nil {
+		return
+	}
 	//ctx.JSON(user)
 	// 密码加盐
 	// 入库
+	_ = ctx.ReadJSON(&userModel)
+	userModel.CreateUser(ctx)
+	ctx.Next()
 }

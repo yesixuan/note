@@ -1,9 +1,8 @@
-package database
+package models
 
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"note/src/models"
 	"note/src/util"
 	"strings"
 	"time"
@@ -25,7 +24,7 @@ func init() {
 	db.SingularTable(true)        //表生成结尾不带s
 	// 启用Logger，显示详细日志
 	db.LogMode(true)
-	if !db.HasTable(&models.User{}) { //db.Set 设置一些额外的表属性                              //db.CreateTable创建表
+	if !db.HasTable(&User{}) { //db.Set 设置一些额外的表属性                              //db.CreateTable创建表
 		if err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").Error; err != nil {
 			panic(err)
 		}
@@ -36,6 +35,6 @@ func init() {
 func InitTables() {
 	// 自动创建表
 	DB.AutoMigrate(
-		&models.User{},
+		&User{},
 	)
 }
