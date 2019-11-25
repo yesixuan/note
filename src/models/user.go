@@ -2,21 +2,20 @@ package models
 
 import (
 	"github.com/jameskeane/bcrypt"
-	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/v12"
+	"note/src/util"
 	"note/src/validators"
 )
 
 var salt, _ = bcrypt.Salt(10)
 
 type User struct {
-	gorm.Model
-	Uname    string `gorm:"type:varchar(50);not null;unique_index"`
-	Password string `gorm:"type:varchar(200);not null"`
-	Mobile   string `gorm:"type:varchar(11);not null"`
-	Email    string `gorm:"type:varchar(200);not null"`
-	Motto    string `gorm:"type:varchar(50)"`
-	Status   string `gorm:"type:enum('normal', 'abnormal');default:'normal'"`
+	BaseModel
+	Uname    string `gorm:"type:varchar(50);not null;unique_index"json:"uname"`
+	Password string `gorm:"type:varchar(200);not null"json:"password"`
+	Mobile   string `gorm:"type:varchar(11);not null"json:"mobile"`
+	Email    string `gorm:"type:varchar(200);not null"json:"email"`
+	Motto    string `gorm:"type:varchar(50)"json:"motto"`
 }
 
 func (user *User) CreateUser(ctx iris.Context) {
@@ -46,6 +45,6 @@ func (user *User) Login(ctx iris.Context, loginUser *validators.LoginUser) {
 		ctx.Values().Set("msg", "用户名或密码错误")
 		return
 	}
-	ctx.Values().Set("data", result)
+	ctx.Values().Set("data", util.GetToken(int(result.ID)))
 	ctx.Next()
 }

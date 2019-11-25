@@ -22,6 +22,5 @@ func createApp() *iris.Application {
 		_ = models.DB.Close()
 	})
 	middlewares.InitMiddleware(app)
-	middlewares.InitMiddleware(app)
 	return app
 }

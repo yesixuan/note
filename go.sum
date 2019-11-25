@@ -36,6 +36,8 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/denisenkom/go-mssqldb v0.0.0-20190515213511-eb9f6a1743f3/go.mod h1:zAg7JM8CkOJ43xKXIj7eRO9kmWm/TW578qo+oDO6tuM=
 github.com/dgraph-io/badger v1.6.0/go.mod h1:zwt7syl517jmP8s94KqSxTlM6IMsdhYy6psNgSztDR4=
+github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumCAMpl/TFQ4/5kLM=
+github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
 github.com/dgryski/go-farm v0.0.0-20190423205320-6a90982ecee2/go.mod h1:SqUrOPUnsFjfmXRMNPybcSiG0BgUW2AuFH8PAnS2iTw=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5mFgVsvEsIPBvNs=
@@ -104,6 +106,8 @@ github.com/iris-contrib/i18n v0.0.0-20171121225848-987a633949d0/go.mod h1:pMCz62
 github.com/iris-contrib/middleware v12.0.0+incompatible h1:MCcy1KvM/SMFALv/i/2YiZBNrAZDUrrmDGJgsduOMu4=
 github.com/iris-contrib/middleware/cors v0.0.0-20191111233249-6e1f5f92190e h1:WOK9N/8zRc5Qzwes0Mm6nokCC4HB67evkit2YTReVNw=
 github.com/iris-contrib/middleware/cors v0.0.0-20191111233249-6e1f5f92190e/go.mod h1:7E7yJvJXYffknyXPaBTSKjniywyfrBvQNvsBvtTMzEY=
+github.com/iris-contrib/middleware/jwt v0.0.0-20191111233249-6e1f5f92190e h1:sWKNOtA9Z7cYwTjYcMtCxm9ISxLCKw8x4AfwS0VQd9E=
+github.com/iris-contrib/middleware/jwt v0.0.0-20191111233249-6e1f5f92190e/go.mod h1:cUmx1IdG2BaZAiiOmejO8cJJDWNxjT1YAl+fPbZXjtk=
 github.com/iris-contrib/schema v0.0.1 h1:10g/WnoRR+U+XXHWKBHeNy/+tZmM2kcAVGLOsz+yaDA=
 github.com/iris-contrib/schema v0.0.1/go.mod h1:urYA3uvUNG1TIIjOSCzHr9/LmbQo8LrOcOqfqxa4hXw=
 github.com/jameskeane/bcrypt v0.0.0-20120420032655-c3cd44c1e20f h1:UWGE8Vi+1Agt0lrvnd7UsmvwqWKRzb9byK9iQmsbY0Y=

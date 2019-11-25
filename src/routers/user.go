@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/kataras/iris/v12"
+	"note/src/middlewares"
 	"note/src/models"
 	"note/src/validators"
 )
@@ -9,6 +10,11 @@ import (
 func UsersRoutes(usersRouter iris.Party) {
 	usersRouter.Post("/register", register)
 	usersRouter.Post("/login", login)
+	usersRouter.Post("/test", middlewares.GetJwtHandler(), func(ctx iris.Context) {
+		//ctx.JSON(iris.Map{"hehe": "haha"})
+		ctx.Values().Set("data", "成功")
+		ctx.Next()
+	})
 }
 
 func register(ctx iris.Context) {
