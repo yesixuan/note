@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris/v12"
 	"note/src/middlewares"
 	"note/src/models"
@@ -11,8 +12,12 @@ func UsersRoutes(usersRouter iris.Party) {
 	usersRouter.Post("/register", register)
 	usersRouter.Post("/login", login)
 	usersRouter.Post("/test", middlewares.GetJwtHandler(), func(ctx iris.Context) {
+		var user models.User
+		userInfo := ctx.Values().Get("jwt").(*jwt.Token).Claims.(jwt.MapClaims)
+		uid := int(userInfo["uid"].(float64))
+		permissions := user.GetPermissions(uid)
 		//ctx.JSON(iris.Map{"hehe": "haha"})
-		ctx.Values().Set("data", "成功")
+		ctx.Values().Set("data", permissions)
 		ctx.Next()
 	})
 }

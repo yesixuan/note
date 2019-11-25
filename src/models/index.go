@@ -36,5 +36,14 @@ func InitTables() {
 	// 自动创建表
 	DB.AutoMigrate(
 		&User{},
+		&Role{},
+		&Permission{},
 	)
+	//DB.Create(
+	//	&Role{
+	//		Name:        "normal",
+	//		Description: "普通用户权限",
+	//		Permission: [] *Permission { {Name: "common", Description: "正常登录用户权限"} },
+	//	},
+	//)
 }
