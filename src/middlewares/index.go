@@ -35,9 +35,11 @@ func useGlobalAfter(ctx iris.Context) {
 	if ctx.Values().GetString("msg") != "" {
 		msg = ctx.Values().GetString("msg")
 	}
-	_, _ = ctx.JSON(iris.Map{
-		"code":    0,
-		"data":    ctx.Values().Get("data"),
-		"message": msg,
-	})
+	if ctx.Values().Get("data") != nil {
+		_, _ = ctx.JSON(iris.Map{
+			"code":    0,
+			"data":    ctx.Values().Get("data"),
+			"message": msg,
+		})
+	}
 }

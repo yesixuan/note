@@ -50,7 +50,7 @@ func (user *User) Login(ctx iris.Context, loginUser *validators.LoginUser) {
 		ctx.Values().Set("msg", "用户名或密码错误")
 		return
 	}
-	ctx.Values().Set("data", util.GetToken(string(result.ID)))
+	ctx.Values().Set("data", util.GetToken(result.ID))
 	ctx.Next()
 }
 
