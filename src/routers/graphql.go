@@ -1,15 +1,18 @@
 package routers
 
 import (
+	"context"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 	_ "github.com/graphql-go/handler"
 	"github.com/kataras/iris/v12"
+	"note/src/middlewares"
+	"note/src/util"
 )
 
 func GraphqlRoute(graphqlRouter iris.Party) {
-	graphqlRouter.Get("/", graphqlHandler())
-	graphqlRouter.Post("/", graphqlHandler())
+	graphqlRouter.Get("/", middlewares.GetJwtHandler(), graphqlHandler())
+	graphqlRouter.Post("/", middlewares.GetJwtHandler(), graphqlHandler())
 }
 
 func graphqlHandler() iris.Handler {
@@ -22,7 +25,8 @@ func graphqlHandler() iris.Handler {
 
 	// 只需要通过Gin简单封装即可
 	return func(c iris.Context) {
-		h.ServeHTTP(c.ResponseWriter(), c.Request())
+		ctx := context.WithValue(context.Background(), "userId", util.GetUserId(c))
+		h.ContextHandler(ctx, c.ResponseWriter(), c.Request())
 	}
 }
 

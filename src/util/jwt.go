@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/iris-contrib/middleware/jwt"
+	"github.com/kataras/iris/v12"
 	"time"
 )
 
@@ -16,4 +17,9 @@ func GetToken(uid uint) string {
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, _ := token.SignedString(mySecret)
 	return tokenString
+}
+
+func GetUserId(ctx iris.Context) int {
+	userInfo := ctx.Values().Get("jwt").(*jwt.Token).Claims.(jwt.MapClaims)
+	return int(userInfo["uid"].(float64))
 }
