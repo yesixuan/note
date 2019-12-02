@@ -23,7 +23,7 @@ func graphqlHandler() iris.Handler {
 		Playground: true,
 	})
 
-	// 只需要通过Gin简单封装即可
+	// 只需要通过 iris 简单封装即可
 	return func(c iris.Context) {
 		ctx := context.WithValue(context.Background(), "userId", util.GetUserId(c))
 		h.ContextHandler(ctx, c.ResponseWriter(), c.Request())
@@ -35,11 +35,28 @@ type user struct {
 	Name string `json:"name"`
 }
 
+type Vic struct {
+	Emotion string `json:"emotion"`
+	Happy   bool   `json:"happy"`
+}
+
 var data = map[string]user{
 	"1": {"1", "Dan"},
 	"2": {"2", "Lee"},
 	"3": {"3", "Nick"},
 }
+
+var vicType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "vicType",
+	Fields: graphql.Fields{
+		"emotion": &graphql.Field{
+			Type: graphql.String,
+		},
+		"happy": &graphql.Field{
+			Type: graphql.Boolean,
+		},
+	},
+})
 
 var userType = graphql.NewObject(
 	graphql.ObjectConfig{
@@ -50,6 +67,15 @@ var userType = graphql.NewObject(
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,
+			},
+			"vic": &graphql.Field{
+				Type: vicType,
+				Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
+					return Vic{
+						Emotion: "angry",
+						Happy:   false,
+					}, nil
+				},
 			},
 		},
 	},
