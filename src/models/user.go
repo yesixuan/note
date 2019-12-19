@@ -1,57 +1,71 @@
 package models
 
 import (
+	"errors"
+	"github.com/go-playground/validator/v10"
 	"github.com/jameskeane/bcrypt"
-	"github.com/kataras/iris/v12"
 	"note/src/util"
-	"note/src/validators"
+	"regexp"
 )
 
 var salt, _ = bcrypt.Salt(10)
+var validate *validator.Validate
+
+func init() {
+	validate = validator.New()
+}
+
+type LoginUser struct {
+	Uname    string `gorm:"type:varchar(50);not null;unique_index" json:"uname" validate:"required,min=1,max=50"`
+	Password string `gorm:"type:varchar(200);not null" json:"password" validate:"required,min=1,max=50"`
+}
 
 type User struct {
 	BaseModel
-	Uname    string  `gorm:"type:varchar(50);not null;unique_index"json:"uname"`
-	Password string  `gorm:"type:varchar(200);not null"json:"password"`
-	Mobile   string  `gorm:"type:varchar(11);not null"json:"mobile"`
-	Email    string  `gorm:"type:varchar(200);not null"json:"email"`
-	Motto    string  `gorm:"type:varchar(50)"json:"motto"`
-	Role     []*Role `gorm:"many2many:user_role;"`
+	LoginUser
+	Mobile string  `gorm:"type:varchar(11);not null"json:"mobile" validate:"required"`
+	Email  string  `gorm:"type:varchar(200);not null"json:"email" validate:"required,email"`
+	Motto  string  `gorm:"type:varchar(50)"json:"motto"`
+	Role   []*Role `gorm:"many2many:user_role;"`
 }
 
-func (user *User) CreateUser(ctx iris.Context) {
+type RegisterUser struct {
+	User
+	PasswordRepeat string `json:"passwordRepeat" validate:"required,eqfield=Password"`
+}
+
+// login user
+func (loginUser LoginUser) Verify() (err error) {
+	errs := validate.Struct(loginUser)
+	if errs != nil && len(errs.(validator.ValidationErrors)) != 0 {
+		return errs
+	}
+	return nil
+}
+
+// 数据库 user
+func (user *User) CreateUser() error {
 	hash, _ := bcrypt.Hash(user.Password, salt)
 	user.Password = hash
 	if err := DB.Create(user).Error; err != nil {
-		ctx.StopExecution()
-		ctx.StatusCode(iris.StatusConflict)
-		ctx.Values().Set("msg", err.Error())
-		return
+		return err
 	}
 	// 给用户一个默认角色
 	DB.Model(user).Association("role").Append(Role{
 		Name: "normal",
 	})
-	ctx.Values().Set("data", user)
-	ctx.Values().Set("msg", "注册成功")
+	return nil
 }
 
-func (user *User) Login(ctx iris.Context, loginUser *validators.LoginUser) {
+func (loginUser *LoginUser) Login() (string, error) {
 	var result User
 	if result := DB.Where("uname = ?", loginUser.Uname).First(&result); result.Error != nil {
-		ctx.StopExecution()
-		ctx.StatusCode(iris.StatusNotFound)
-		ctx.Values().Set("msg", "不存在该用户")
-		return
+		return "", result.Error
 	}
 	if !bcrypt.Match(loginUser.Password, result.Password) {
-		ctx.StopExecution()
-		ctx.StatusCode(iris.StatusNotFound)
-		ctx.Values().Set("msg", "用户名或密码错误")
-		return
+		return "", errors.New("密码不匹配")
 	}
-	ctx.Values().Set("data", util.GetToken(result.ID))
-	ctx.Next()
+	return util.GetToken(result.ID), nil
 }
 
 func (user *User) GetPermissions(uid int) []string {
@@ -69,4 +83,29 @@ func (user *User) GetPermissions(uid int) []string {
 	}
 
 	return result
+}
+
+func (user *User) GetUserById(uid int) User {
+	var res User
+	DB.First(&res, 10)
+	return res
+}
+
+// register user
+func (user RegisterUser) Verify() (err error) {
+	validate.RegisterStructValidation(UserStructLevelValidation, RegisterUser{})
+	errs := validate.Struct(user)
+	if errs != nil && len(errs.(validator.ValidationErrors)) != 0 {
+		println(errs.Error())
+		return errs
+	}
+	return nil
+}
+
+func UserStructLevelValidation(sl validator.StructLevel) {
+	user := sl.Current().Interface().(RegisterUser)
+	reg := regexp.MustCompile("^1[0-9]{10}$")
+	if !reg.MatchString(user.Mobile) {
+		sl.ReportError(user.Mobile, "Mobile", "user.Mobile", "请输入正确的手机号", "")
+	}
 }
